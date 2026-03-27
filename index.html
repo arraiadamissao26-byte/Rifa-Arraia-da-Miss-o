@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Venda de Rifa</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: linear-gradient(180deg,#eaf7ee,#f8f8f8);
+  margin:0;
+}
+
+.container {
+  max-width: 420px;
+  margin: auto;
+  padding:20px;
+}
+
+.card {
+  background:#fff;
+  padding:20px;
+  border-radius:15px;
+  box-shadow:0 10px 30px rgba(0,0,0,.1);
+}
+
+h1 {
+  text-align:center;
+  color:#166534;
+}
+
+select, input, button {
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+button {
+  background:#166534;
+  color:#fff;
+  font-weight:bold;
+  border:none;
+}
+
+button:hover {
+  background:#14532d;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+  <div class="card">
+    <h1>Rifa</h1>
+
+    <input id="nome" placeholder="Nome do cliente">
+    <input id="telefone" placeholder="Telefone">
+
+    <select id="numero"></select>
+
+    <button onclick="enviar()">Registrar</button>
+
+    <p id="msg"></p>
+  </div>
+</div>
+
+<script>
+const API = "COLE_AQUI_SEU_LINK_APPS_SCRIPT";
+
+const vendedor = new URLSearchParams(window.location.search).get("v");
+
+async function carregarNumeros() {
+  const res = await fetch(API + "?acao=listar&v=" + vendedor);
+  const lista = await res.json();
+
+  const select = document.getElementById("numero");
+  select.innerHTML = "";
+
+  lista.forEach(n => {
+    const op = document.createElement("option");
+    op.value = n;
+    op.textContent = n;
+    select.appendChild(op);
+  });
+}
+
+async function enviar() {
+  const nome = document.getElementById("nome").value;
+  const telefone = document.getElementById("telefone").value;
+  const numero = document.getElementById("numero").value;
+
+  const res = await fetch(API, {
+    method: "POST",
+    body: JSON.stringify({
+      vendedor,
+      nome,
+      telefone,
+      numero
+    })
+  });
+
+  const r = await res.json();
+
+  document.getElementById("msg").innerText = r.msg;
+
+  carregarNumeros();
+}
+
+carregarNumeros();
+</script>
+
+</body>
+</html>
